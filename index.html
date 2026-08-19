@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"
+>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Resumen Correos">
+
+<title>Resumen de correos</title>
+
+<style>
+:root {
+  --rosa: #BE3C80;
+  --morado: #B054D8;
+  --azul: #5CA7F7;
+  --texto: #4A2342;
+  --secundario: #8B6583;
+  --borde: #DFC8EF;
+  --borde-claro: #EADDF4;
+  --fondo-claro: #FAF5FD;
+  --boton: #F0D8FF;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Segoe UI",
+    sans-serif;
+
+  background: #f4f0f6;
+  color: var(--texto);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+/* =========================================
+   APP
+========================================= */
+
+.app {
+  width: 100%;
+  max-width: 620px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #fff;
+  padding-bottom: calc(110px + env(safe-area-inset-bottom));
+}
+
+/* =========================================
+   CABECERA
+========================================= */
+
+.header {
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(
+    110deg,
+    #BE3C80 0%,
+    #B054D8 55%,
+    #5CA7F7 100%
+  );
+
+  color: white;
+
+  padding:
+    calc(24px + env(safe-area-inset-top))
+    22px
+    22px;
+
+  border-radius: 0 0 28px 28px;
+
+  box-shadow: 0 8px 25px rgba(126, 54, 120, .18);
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -75px;
+  top: -95px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.10);
+}
+
+.header-row {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 25px;
+  line-height: 1.1;
+  font-weight: 750;
+  letter-spacing: -.5px;
+}
+
+.subtitle {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #F7EFFF;
+}
+
+.date {
+  flex: none;
+  margin-top: 4px;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  padding: 7px 11px;
+
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 12px;
+
+  backdrop-filter: blur(10px);
+}
+
+/* =========================================
+   CONTENIDO
+========================================= */
+
+.content {
+  padding: 21px 16px 0;
+}
+
+.greeting {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.summary {
+  margin: 5px 0 17px;
+  font-size: 12.5px;
+  color: var(--secundario);
+  line-height: 1.45;
+}
+
+/* =========================================
+   BUSCADOR
+========================================= */
+
+.search-wrap {
+  position: relative;
+  margin-bottom: 17px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  font-size: 15px;
+  opacity: .65;
+  pointer-events: none;
+}
+
+.search {
+  width: 100%;
+  height: 43px;
+
+  padding: 0 16px 0 42px;
+
+  border: 1.5px solid #DCC1ED;
+  border-radius: 16px;
+
+  background: #FAF5FD;
+  color: var(--texto);
+
+  font-size: 14px;
+
+  outline: none;
+
+  -webkit-appearance: none;
+}
+
+.search::placeholder {
+  color: #9B7B98;
+}
+
+.search:focus {
+  border-color: #C98BE8;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(176,84,216,.08);
+}
+
+/* =========================================
+   LISTADO
+========================================= */
+
+.mail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+/* =========================================
+   TARJETA REMITENTE
+========================================= */
+
+.sender-card {
+  background: #FCFAFD;
+
+  border: 1.2px solid #DFC8EF;
+  border-radius: 18px;
+
+  padding: 11px;
+
+  box-shadow: 0 3px 12px rgba(91, 45, 87, .035);
+}
+
+.sender-main {
+  display: grid;
+  grid-template-columns: 39px minmax(0, 1fr);
+  gap: 9px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--rosa);
+  color: white;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: .2px;
+}
+
+.sender-content {
+  min-width: 0;
+}
+
+.sender-name {
+  margin: 1px 0 4px;
+
+  font-size: 14px;
+  line-height: 1.25;
+
+  font-weight: 750;
+  color: var(--texto);
+}
+
+.show-subjects {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  margin: 1px 0 2px;
+
+  border: 0;
+  padding: 4px 0;
+
+  background: transparent;
+  color: var(--rosa);
+
+  font-size: 12px;
+  font-weight: 650;
+
+  cursor: pointer;
+}
+
+.chevron {
+  font-size: 10px;
+  transition: transform .2s ease;
+}
+
+.sender-card.open .chevron {
+  transform: rotate(180deg);
+}
+
+/* =========================================
+   CORREO
+========================================= */
+
+.subjects {
+  display: none;
+  margin-top: 7px;
+}
+
+.sender-card.open .subjects {
+  display: block;
+}
+
+.single-message {
+  margin-top: 3px;
+}
+
+.mail-row {
+  padding: 8px 9px;
+
+  background: white;
+
+  border: 1px solid var(--borde-claro);
+  border-radius: 11px;
+
+  margin-bottom: 6px;
+}
+
+.single-message .mail-row {
+  border: 0;
+  background: transparent;
+  padding: 2px 0 0;
+  margin: 0;
+}
+
+.mail-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+
+  min-width: 0;
+}
+
+.mail-time {
+  flex: none;
+
+  padding-top: 1px;
+
+  font-size: 11px;
+  font-weight: 650;
+
+  color: #9B7B98;
+}
+
+.mail-subject {
+  min-width: 0;
+
+  font-size: 12px;
+  line-height: 1.35;
+
+  color: #4A2342;
+
+  overflow-wrap: anywhere;
+}
+
+.mail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+
+  margin-top: 7px;
+}
+
+/* =========================================
+   BOTONES
+========================================= */
+
+.btn {
+  border: 1px solid #D7B7EA;
+  border-radius: 11px;
+
+  background: #F0D8FF;
+  color: var(--rosa);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  min-height: 29px;
+  padding: 0 13px;
+
+  cursor: pointer;
+}
+
+.btn:active {
+  transform: scale(.97);
+  background: #E0B8F8;
+}
+
+.read-all-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 7px;
+}
+
+.btn-read-all {
+  border: 1px solid var(--rosa);
+  border-radius: 11px;
+
+  min-height: 30px;
+
+  padding: 0 13px;
+
+  background: var(--rosa);
+  color: white;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+/* =========================================
+   TODO AL DÍA
+========================================= */
+
+.all-done {
+  margin-top: 28px;
+
+  padding: 34px 22px;
+
+  background: #FAF5FD;
+
+  border: 1.5px solid #DCC1ED;
+  border-radius: 20px;
+
+  text-align: center;
+}
+
+.all-done-icon {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 13px;
+
+  border-radius: 50%;
+
+  background: #F0D8FF;
+  color: var(--rosa);
+
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.all-done h2 {
+  margin: 0 0 7px;
+  font-size: 22px;
+}
+
+.all-done p {
+  margin: 0;
+  color: var(--secundario);
+  font-size: 13px;
+}
+
+/* =========================================
+   BARRA INFERIOR
+========================================= */
+
+.bottom-area {
+  position: fixed;
+
+  left: 50%;
+  transform: translateX(-50%);
+
+  bottom: 0;
+
+  width: 100%;
+  max-width: 620px;
+
+  padding:
+    10px
+    16px
+    calc(10px + env(safe-area-inset-bottom));
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(255,255,255,1) 72%,
+      rgba(255,255,255,.94) 88%,
+      rgba(255,255,255,0)
+    );
+}
+
+.bottom-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+
+  padding: 9px;
+
+  border: 1px solid #E8DCEF;
+  border-radius: 20px;
+
+  background: rgba(255,255,255,.96);
+
+  box-shadow: 0 8px 28px rgba(73,35,66,.13);
+
+  backdrop-filter: blur(18px);
+}
+
+.bottom-button {
+  height: 43px;
+
+  border-radius: 14px;
+
+  border: 1px solid #D7B7EA;
+
+  background: #F0D8FF;
+  color: var(--rosa);
+
+  font-size: 12px;
+  font-weight: 750;
+
+  cursor: pointer;
+}
+
+.bottom-button.primary {
+  border-color: var(--rosa);
+
+  background: linear-gradient(
+    110deg,
+    #BE3C80,
+    #B054D8
+  );
+
+  color: white;
+}
+
+.bottom-button:active {
+  transform: scale(.98);
+}
+
+/* =========================================
+   CARGANDO
+========================================= */
+
+.loading {
+  opacity: .6;
+  pointer-events: none;
+}
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media (min-width: 650px) {
+
+  body {
+    padding: 30px 0;
+  }
+
+  .app {
+    min-height: calc(100vh - 60px);
+    border-radius: 28px;
+    overflow: hidden;
+
+    box-shadow: 0 15px 45px rgba(73,35,66,.14);
+  }
+
+  .header {
+    border-radius: 0 0 28px 28px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- CABECERA -->
+  <header class="header">
+
+    <div class="header-row">
+
+      <div>
+        <h1>Resumen de correos</h1>
+        <div class="subtitle">Automatización diaria</div>
+      </div>
+
+      <div class="date" id="fechaHoy"></div>
+
+    </div>
+
+  </header>
+
+
+  <!-- CONTENIDO -->
+  <main class="content">
+
+    <h2 class="greeting" id="saludo">
+      Buenos días Sandra
+    </h2>
+
+    <p class="summary" id="resumen"></p>
+
+
+    <!-- BUSCADOR -->
+    <div class="search-wrap">
+
+      <div class="search-icon">⌕</div>
+
+      <input
+        id="buscador"
+        class="search"
+        type="search"
+        placeholder="Buscar"
+        autocomplete="off"
+      >
+
+    </div>
+
+
+    <!-- CORREOS -->
+    <div id="listadoCorreos" class="mail-list"></div>
+
+  </main>
+
+</div>
+
+
+<!-- BARRA INFERIOR -->
+<div class="bottom-area">
+
+  <div class="bottom-card">
+
+    <button
+      class="bottom-button primary"
+      id="btnActualizar"
+      type="button"
+    >
+      Actualizar
+    </button>
+
+    <button
+      class="bottom-button"
+      id="btnOutlook"
+      type="button"
+    >
+      Abrir Outlook
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   DATOS DE PRUEBA
+   Después se sustituyen por Microsoft Graph
+===================================================== */
+
+let correos = [
+
+  {
+    id: "1",
+    remitente: "Manuel India",
+    asunto: "Revisión documentación Kit Digital",
+    hora: "09:42"
+  },
+
+  {
+    id: "2",
+    remitente: "Manuel India",
+    asunto: "Cliente pendiente de revisar",
+    hora: "10:17"
+  },
+
+  {
+    id: "3",
+    remitente: "Manuel India",
+    asunto: "Documentación adicional",
+    hora: "11:03"
+  },
+
+  {
+    id: "4",
+    remitente: "Junta de Extremadura",
+    asunto: "Notificación de documentación adicional",
+    hora: "11:28"
+  },
+
+  {
+    id: "5",
+    remitente: "Microsoft",
+    asunto: "Aviso de vencimiento",
+    hora: "12:14"
+  },
+
+  {
+    id: "6",
+    remitente: "Synapse KD",
+    asunto: "Información cliente VERANTRI",
+    hora: "13:06"
+  }
+
+];
+
+let ultimaActualizacion = null;
+
+
+/* =====================================================
+   FECHA
+===================================================== */
+
+function ponerFecha() {
+
+  const ahora = new Date();
+
+  const fecha =
+    String(ahora.getDate()).padStart(2, "0") +
+    "/" +
+    String(ahora.getMonth() + 1).padStart(2, "0") +
+    "/" +
+    ahora.getFullYear();
+
+  document.getElementById("fechaHoy").textContent = fecha;
+
+}
+
+
+/* =====================================================
+   SALUDO
+===================================================== */
+
+function ponerSaludo() {
+
+  const hora = new Date().getHours();
+
+  let saludo = "Buenos días";
+
+  if (hora >= 14 && hora < 21) {
+    saludo = "Buenas tardes";
+  }
+
+  if (hora >= 21 || hora < 6) {
+    saludo = "Buenas noches";
+  }
+
+  document.getElementById("saludo").textContent =
+    saludo + " Sandra";
+
+}
+
+
+/* =====================================================
+   INICIALES
+===================================================== */
+
+function obtenerIniciales(nombre) {
+
+  if (!nombre) return "?";
+
+  const partes =
+    nombre
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+  if (partes.length === 0) {
+    return "?";
+  }
+
+  if (partes.length === 1) {
+    return partes[0]
+      .substring(0, 2)
+      .toUpperCase();
+  }
+
+  return (
+    partes[0].charAt(0) +
+    partes[1].charAt(0)
+  ).toUpperCase();
+
+}
+
+
+/* =====================================================
+   AGRUPAR POR REMITENTE
+===================================================== */
+
+function agruparCorreos(lista) {
+
+  const grupos = {};
+
+  lista.forEach(correo => {
+
+    if (!grupos[correo.remitente]) {
+      grupos[correo.remitente] = [];
+    }
+
+    grupos[correo.remitente].push(correo);
+
+  });
+
+  return Object.entries(grupos)
+    .sort((a, b) => {
+
+      const manuelA =
+        a[0].toLowerCase().includes("manuel india");
+
+      const manuelB =
+        b[0].toLowerCase().includes("manuel india");
+
+      if (manuelA && !manuelB) return -1;
+      if (!manuelA && manuelB) return 1;
+
+      return a[0].localeCompare(
+        b[0],
+        "es",
+        { sensitivity: "base" }
+      );
+
+    });
+
+}
+
+
+/* =====================================================
+   ESCAPAR HTML
+===================================================== */
+
+function escapar(texto) {
+
+  const div = document.createElement("div");
+
+  div.textContent = texto ?? "";
+
+  return div.innerHTML;
+
+}
+
+
+/* =====================================================
+   RESUMEN
+===================================================== */
+
+function actualizarResumen() {
+
+  const total = correos.length;
+
+  const remitentes =
+    new Set(
+      correos.map(c => c.remitente)
+    ).size;
+
+  let texto =
+    `${total} correos pendientes · ` +
+    `${remitentes} remitentes`;
+
+  if (ultimaActualizacion) {
+
+    texto +=
+      ` · actualizado a las ${ultimaActualizacion}`;
+
+  } else {
+
+    texto +=
+      ` · últimas 24 horas`;
+
+  }
+
+  document.getElementById("resumen").textContent = texto;
+
+}
+
+
+/* =====================================================
+   TODO AL DÍA
+===================================================== */
+
+function pintarTodoAlDia() {
+
+  document.getElementById("listadoCorreos").innerHTML = `
+
+    <div class="all-done">
+
+      <div class="all-done-icon">✓</div>
+
+      <h2>Todo al día</h2>
+
+      <p>
+        No quedan correos pendientes de revisar.
+      </p>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   PINTAR CORREOS
+===================================================== */
+
+function pintarCorreos() {
+
+  const contenedor =
+    document.getElementById("listadoCorreos");
+
+  const filtro =
+    document
+      .getElementById("buscador")
+      .value
+      .trim()
+      .toLowerCase();
+
+  actualizarResumen();
+
+  if (correos.length === 0) {
+
+    pintarTodoAlDia();
+    return;
+
+  }
+
+  const filtrados =
+    correos.filter(correo =>
+
+      correo.remitente
+        .toLowerCase()
+        .includes(filtro)
+
+      ||
+
+      correo.asunto
+        .toLowerCase()
+        .includes(filtro)
+
+    );
+
+  if (filtrados.length === 0) {
+
+    contenedor.innerHTML = `
+
+      <div class="all-done">
+
+        <h2>Sin resultados</h2>
+
+        <p>
+          No hay correos pendientes que coincidan
+          con la búsqueda.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+  const grupos =
+    agruparCorreos(filtrados);
+
+  contenedor.innerHTML = "";
+
+
+  grupos.forEach(([remitente, mensajes]) => {
+
+    const tarjeta =
+      document.createElement("section");
+
+    tarjeta.className = "sender-card";
+
+
+    const cantidad = mensajes.length;
+
+    const titulo =
+      cantidad === 1
+        ? escapar(remitente)
+        : `${escapar(remitente)} (${cantidad})`;
+
+
+    let contenidoMensajes = "";
+
+
+    /* ===============================================
+       UN SOLO CORREO
+    =============================================== */
+
+    if (cantidad === 1) {
+
+      const correo = mensajes[0];
+
+      contenidoMensajes = `
+
+        <div class="single-message">
+
+          ${crearLineaCorreo(correo)}
+
+        </div>
+
+      `;
+
+    }
+
+
+    /* ===============================================
+       VARIOS CORREOS
+    =============================================== */
+
+    else {
+
+      const filas =
+        mensajes
+          .map(correo => crearLineaCorreo(correo))
+          .join("");
+
+
+      contenidoMensajes = `
+
+        <button
+          class="show-subjects"
+          type="button"
+          onclick="toggleGrupo(this)"
+        >
+          Mostrar asuntos
+          <span class="chevron">▼</span>
+        </button>
+
+        <div class="subjects">
+
+          <div class="read-all-wrap">
+
+            <button
+              class="btn-read-all"
+              type="button"
+              onclick='marcarTodosLeidos(
+                ${JSON.stringify(remitente)}
+              )'
+            >
+              Leer todos
+            </button>
+
+          </div>
+
+          ${filas}
+
+        </div>
+
+      `;
+
+    }
+
+
+    tarjeta.innerHTML = `
+
+      <div class="sender-main">
+
+        <div class="avatar">
+          ${escapar(obtenerIniciales(remitente))}
+        </div>
+
+        <div class="sender-content">
+
+          <div class="sender-name">
+            ${titulo}
+          </div>
+
+          ${contenidoMensajes}
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    contenedor.appendChild(tarjeta);
+
+  });
+
+}
+
+
+/* =====================================================
+   CREAR LÍNEA
+===================================================== */
+
+function crearLineaCorreo(correo) {
+
+  return `
+
+    <div class="mail-row">
+
+      <div class="mail-info">
+
+        <span class="mail-time">
+          ${escapar(correo.hora)}
+        </span>
+
+        <span class="mail-subject">
+          ${escapar(correo.asunto)}
+        </span>
+
+      </div>
+
+      <div class="mail-actions">
+
+        <button
+          class="btn"
+          type="button"
+          onclick='abrirCorreo(
+            ${JSON.stringify(correo.id)}
+          )'
+        >
+          Abrir
+        </button>
+
+        <button
+          class="btn"
+          type="button"
+          onclick='marcarLeido(
+            ${JSON.stringify(correo.id)}
+          )'
+        >
+          Leído
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   DESPLEGAR REMITENTE
+===================================================== */
+
+function toggleGrupo(boton) {
+
+  const tarjeta =
+    boton.closest(".sender-card");
+
+  tarjeta.classList.toggle("open");
+
+  boton.childNodes[0].nodeValue =
+    tarjeta.classList.contains("open")
+      ? "Ocultar asuntos "
+      : "Mostrar asuntos ";
+
+}
+
+
+/* =====================================================
+   MARCAR CORREO COMO LEÍDO
+===================================================== */
+
+function marcarLeido(id) {
+
+  correos =
+    correos.filter(
+      correo => correo.id !== id
+    );
+
+  pintarCorreos();
+
+}
+
+
+/* =====================================================
+   LEER TODOS
+===================================================== */
+
+function marcarTodosLeidos(remitente) {
+
+  correos =
+    correos.filter(
+      correo =>
+        correo.remitente !== remitente
+    );
+
+  pintarCorreos();
+
+}
+
+
+/* =====================================================
+   ABRIR CORREO
+===================================================== */
+
+function abrirCorreo(id) {
+
+  /*
+     En la siguiente fase este botón abrirá
+     el correo real mediante Microsoft Graph /
+     Outlook.
+  */
+
+  alert(
+    "La conexión con Outlook se añadirá en el siguiente paso."
+  );
+
+}
+
+
+/* =====================================================
+   ACTUALIZAR
+===================================================== */
+
+function actualizar() {
+
+  const boton =
+    document.getElementById("btnActualizar");
+
+  boton.textContent = "Actualizando…";
+  boton.classList.add("loading");
+
+
+  setTimeout(() => {
+
+    const ahora = new Date();
+
+    ultimaActualizacion =
+      String(ahora.getHours()).padStart(2, "0")
+      +
+      ":"
+      +
+      String(ahora.getMinutes()).padStart(2, "0");
+
+    pintarCorreos();
+
+    boton.textContent = "Actualizar";
+    boton.classList.remove("loading");
+
+  }, 500);
+
+}
+
+
+/* =====================================================
+   ABRIR OUTLOOK
+===================================================== */
+
+function abrirOutlook() {
+
+  /*
+     Intentamos abrir Outlook instalado.
+     Si iOS no acepta el esquema, abrimos Outlook web.
+  */
+
+  window.location.href = "ms-outlook://";
+
+  setTimeout(() => {
+
+    if (!document.hidden) {
+
+      window.location.href =
+        "https://outlook.office.com/mail/";
+
+    }
+
+  }, 900);
+
+}
+
+
+/* =====================================================
+   EVENTOS
+===================================================== */
+
+document
+  .getElementById("buscador")
+  .addEventListener(
+    "input",
+    pintarCorreos
+  );
+
+
+document
+  .getElementById("btnActualizar")
+  .addEventListener(
+    "click",
+    actualizar
+  );
+
+
+document
+  .getElementById("btnOutlook")
+  .addEventListener(
+    "click",
+    abrirOutlook
+  );
+
+
+/* =====================================================
+   INICIO
+===================================================== */
+
+ponerFecha();
+ponerSaludo();
+pintarCorreos();
+
+</script>
+
+</body>
+</html>
